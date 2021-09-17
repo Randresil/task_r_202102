@@ -71,5 +71,3 @@ cultivo_xlsx_sintotal <- cultivo_xlsx[c(-9, -63, -69, -86, -99, -105, -122, -151
 
 
 
-
-
