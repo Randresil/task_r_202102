@@ -47,6 +47,7 @@ cultivo_xlsx = import(file = "/Users/ricardoandressilvatorres/OneDrive - Univers
 class(cultivo_xlsx) # es un dataframe
 View(cultivo_xlsx)
 
+
   # Curioseando con las funciones
 nrow(cultivo_xlsx) # 355 observaciones
 ncol(cultivo_xlsx) # 25 variables
@@ -57,8 +58,9 @@ str(cultivo_xlsx) # Clase de objeto, filas y columnas, carac de variables
 glimpse(cultivo_xlsx) # Tipo de variables y filas y columnas
 object.size(cultivo_xlsx) # Peso del archivo en bytes
 
+
   # Para la lIMPIEZA del DATAFRAME
-    # Pata trabajar con las columnas con funcion SELECT() y derivados
+    # Para trabajar con las columnas con funcion SELECT() y derivados
     # Para trabajar con las filas con funcion SUBSET()
 
 cultivo_xlsx_sinNA <- cultivo_xlsx %>% drop_na() # Ahora todas las observaciones tienen info y ningun NA
@@ -66,8 +68,27 @@ cultivo_xlsx_sintotal <- cultivo_xlsx[c(-9, -63, -69, -86, -99, -105, -122, -151
                                         -195, -200, -207, -212, -216, -221, -236, -272, -291, 
                                         -302, -333, -341, -348, -352, -353, -354, -355), ] # Remover a mano por indexacion negativa
 
+cultivo_xlsx_sinNA2 <- cultivo_xlsx %>% drop_na(MUNICIPIO) # Al borrar un NA de una variable se borra la fila/observacion completa
+cultivo_xlsx_sinNA2 <- cultivo_xlsx_sinNA2[c(-329), ] # BASE FINAL :)
 
+  # Codigo para convertir las variables/columnas en tipo character
+cultivo_xlsx_sinNA2$`2008` = as.character(cultivo_xlsx_sinNA2$`2008`) # Toca colocar con `` la variable
+cultivo_xlsx_sinNA2$`2009` = as.character(cultivo_xlsx_sinNA2$`2009`)
+cultivo_xlsx_sinNA2$`2010` = as.character(cultivo_xlsx_sinNA2$`2010`)
+cultivo_xlsx_sinNA2$`2011` = as.character(cultivo_xlsx_sinNA2$`2011`)
+cultivo_xlsx_sinNA2$`2012` = as.character(cultivo_xlsx_sinNA2$`2012`)
+cultivo_xlsx_sinNA2$`2013` = as.character(cultivo_xlsx_sinNA2$`2013`)
+cultivo_xlsx_sinNA2$`2014` = as.character(cultivo_xlsx_sinNA2$`2014`)
+cultivo_xlsx_sinNA2$`2015` = as.character(cultivo_xlsx_sinNA2$`2015`)
+cultivo_xlsx_sinNA2$`2016` = as.character(cultivo_xlsx_sinNA2$`2016`)
+cultivo_xlsx_sinNA2$`2017` = as.character(cultivo_xlsx_sinNA2$`2017`)
+cultivo_xlsx_sinNA2$`2018` = as.character(cultivo_xlsx_sinNA2$`2018`)
+cultivo_xlsx_sinNA2$`2019` = as.character(cultivo_xlsx_sinNA2$`2019`)
+glimpse(cultivo_xlsx_sinNA2)
 
+  # Codigo con funcion lapply para convertir (por medio de loops) el variables en chr
+    # cultivo_xlsx_sinNA2 = lapply(data_xls,as.character) %>% data.frame()
 
-
+cultivo_xlsx_sinNA2 %>% pivot_longer(!CODDEPTO,!DEPARTAMENTO,!CODMPIO,!MUNICIPIO,names_to="year",values_to="cultivos") 
+cultivo_xlsx_sinNA2 = cultivo_xlsx_sinNA2 %>% pivot_longer(CODDEPTO:MUNICIPIO,names_to="year",values_to="cultivos") 
 
