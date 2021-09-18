@@ -13,7 +13,6 @@ Sys.setlocale("LC_CTYPE", "en_US.UTF-8") # Encoding UTF-8
 #             TALLER A                #
 #######################################
 
-
 #------------------------------------------------------------------------------#
 #---------------------------- PUNTO 1 - VECTORES ------------------------------#
 #------------------------------------------------------------------------------#
@@ -93,25 +92,39 @@ cultivo_final %>% pivot_longer(!CODDEPTO,!DEPARTAMENTO,!CODMPIO,!MUNICIPIO,names
 cultivo_final = cultivo_final %>% pivot_longer(CODDEPTO:MUNICIPIO,names_to="year",values_to="cultivos") 
 
 
-
 #------------------------------------------------------------------------------#
 #----------------- PUNTO 3 - Base de datos dataframe GEIH ---------------------#
 #------------------------------------------------------------------------------#
 rm(list = ls())
 
 cat("Instruccion 3.1: Importe las bases de datos Cabecera - Caracteristicas generales (Personas).rds, Cabecera - Ocupados.rds, Cabecera - Desocupados.rds, Cabecera - Inactivos.rds y Cabecera - Fuerza de trabajo.rds de la carpeta data/input/2019. Luego use las variables secuencia_p, orden y directorio para unir en una única base de datos. Mantenga en la base de datos únicamente las variables secuencia_p, orden, directorio, P6020, P6040, P6030S1, P6440, P6450, P6920, INGLABO, DPTO, fex_c_2011, ESC, MES, P6050 y las variables que usted va a generar para saber si una persona es ocupada, desocupada, inactiva y/o fuerza de trabajo.")
+cat("Variables a buscar: directorio, secuencia_p, orden, P6020, P6040, P6030S1, P6440, P6450, P6920, INGLABO, dpto, fex_c_2011, ESC, MES, P6050 y las demas que considere")
 
 setwd("/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019")
 list.files() # Listar los archivos que se encuentran en el directorio
 
-data_ccg = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Caracteristicas generales (Personas).rds")
-data_cdesoc = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Desocupados.rds")
-data_cfuerza = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102task_1/data/input/2019/Cabecera - Fuerza de trabajo.rds")
-data_cinact = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Inactivos.rds")
-data_cocup = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Ocupados.rds")
+cgen = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Caracteristicas generales (Personas).rds")
+desoc = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Desocupados.rds")
+fuerza = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Fuerza de trabajo.rds")
+inact = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Inactivos.rds")
+ocup = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Ocupados.rds")
 
-str(data_ccg)
-colnames(data_ccg) 
-  # Variables de interes son: directorio secuencia_p orden
-  # Variables a mantener son: directorio secuencia_p orden P6020 P6040 P6030S1 P6440 P6450 P6920 INGLABO DPTO fex_c_2011 ESC MES P6050 y las demas que considere
+str(cgen)
 
+cgen %>% select_all(tolower) %>% colnames()
+desoc %>% select_all(tolower) %>% colnames()
+fuerza %>% select_all(tolower) %>% colnames()
+inact %>% select_all(tolower) %>% colnames()
+ocup %>% select_all(tolower) %>% colnames()
+  # Variables de interes son: directorio, secuencia_p, orden
+  # Variables a mantener son: directorio, secuencia_p, orden, P6020, P6040, P6030S1, P6440, P6450, P6920, INGLABO, dpto, fex_c_2011, ESC, MES, P6050 y las demas que considere
+  # CARACTERISTICAS GENERALES: P6020 P6040 ESC MES P6050 DPTO fex_c_2011
+  # Ocupados: INGLABO P6920 
+  # Variables P6030S1, P6440, P6450 NO ESTAN!!!
+
+base_unica = left_join(x = cgen, y = desoc, by = c("directorio","secuencia_p","orden"), suffix = c("", ""))
+base_unica = left_join(x = base_unica, y = fuerza, by = c("directorio","secuencia_p","orden"), suffix = c("", ""))
+base_unica = left_join(x = base_unica, y = inact, by = c("directorio","secuencia_p","orden"), suffix = c("", ""))
+base_unica = left_join(x = base_unica, y = ocup, by = c("directorio","secuencia_p","orden"), suffix = c("", ""))
+
+base_unica = base_unica %>% select_all(tolower)
