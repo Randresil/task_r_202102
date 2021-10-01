@@ -119,23 +119,27 @@ setwd("/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/Talle
 list.files() # Listar los archivos que se encuentran en el directorio
 
 cgen = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Caracteristicas generales (Personas).rds")
-desoc = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Desocupados.rds")
-fuerza = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Fuerza de trabajo.rds")
-inact = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Inactivos.rds")
-ocup = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Ocupados.rds")
+desoc = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Desocupados.rds") %>% mutate(desocupado =1)
+fuerza = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Fuerza de trabajo.rds") %>% mutate(fuerza =1)
+inact = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Inactivos.rds") %>% mutate(inactivo =1)
+ocup = import(file = "/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/input/2019/Cabecera - Ocupados.rds") %>% mutate(ocupado =1)
 
 glimpse(cgen)
 
-cgen %>% select_all(tolower) %>% colnames()
-desoc %>% select_all(tolower) %>% colnames()
-fuerza %>% select_all(tolower) %>% colnames()
-inact %>% select_all(tolower) %>% colnames()
-ocup %>% select_all(tolower) %>% colnames()
+cgen = cgen %>% select_all(tolower) 
+desoc = desoc %>% select_all(tolower) 
+fuerza = fuerza %>% select_all(tolower) 
+inact = inact %>% select_all(tolower) 
+ocup = ocup %>% select_all(tolower) 
   # Variables de interes son: directorio, secuencia_p, orden
   # Variables a mantener son: secuencia_p, orden, directorio, P6020, P6040, P6920, INGLABO, DPTO, fex_c_2011, ESC, MES, P6050 y las demas que considere
   # Esencial empezar con la base de cg
   # CARACTERISTICAS GENERALES: P6020 P6040 ESC MES P6050 DPTO fex_c_2011
   # Ocupados: INGLABO P6920 dpto fex inglabo
+
+  # FORMA ALTERNA CON PIPES 
+    # geih = left_join(cgen,desoc,c("secuencia_p","orden","directorio")) %>% left_join(.,fuerza,c("secuencia_p","orden","directorio")) %>%
+    #   left_join(.,inact,c("secuencia_p","orden","directorio")) %>% left_join(.,ocup,c("secuencia_p","orden","directorio")) 
 
 base_unica = left_join(x = cgen, y = desoc, by = c("directorio","secuencia_p","orden"), suffix = c("", ""))
 base_unica = left_join(x = base_unica, y = fuerza, by = c("directorio","secuencia_p","orden"), suffix = c("", ""))
@@ -143,4 +147,17 @@ base_unica = left_join(x = base_unica, y = inact, by = c("directorio","secuencia
 base_unica = left_join(x = base_unica, y = ocup, by = c("directorio","secuencia_p","orden"), suffix = c("", ""))
 
 colnames(base_unica)
-base_unica = base_unica %>% select_all(tolower)
+
+vector_var = c("directorio", "secuencia_p", "orden", "p6020", "p6040", "p6050", "inglabo", "dpto", "fex_c_2011", "esc", "mes", "desocupado", "fuerza", "inactivo", "ocupado")
+
+base_unica = base_unica %>% select(vector_var) #quedarme con las variables de interes
+
+
+#-------- PUNTO 3.2 - Estad. descriptivas GEIH -----------#
+cat("Use las funciones ggplot(), group_by() y summarize() entre otras, para generar algunas estadísticas descriptivas (gráficos y tablas) numero de ocupados, desocupados y los ingresos laborales promedio. 
+    Tenga en cuenta algunas dimensiones como departamento, sexo y edad. 
+    Las tablas las puede plotear sobre la consola, pero los gráficos los debe exportar en formato .jpeg a la carpeta views. Debe generar al menos 5 gráficos y 5 tablas.")
+
+
+
+
