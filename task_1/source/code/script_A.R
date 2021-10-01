@@ -148,6 +148,7 @@ base_unica = left_join(x = base_unica, y = ocup, by = c("directorio","secuencia_
 
 colnames(base_unica)
 
+<<<<<<< HEAD
 vector_var = c("directorio", "secuencia_p", "orden", "p6020", "p6040", "p6050", "inglabo", "dpto", "fex_c_2011", "esc", "mes", "desocupado", "fuerza", "inactivo", "ocupado")
 
 base_unica = base_unica %>% select(vector_var) #quedarme con las variables de interes
@@ -159,5 +160,7 @@ cat("Use las funciones ggplot(), group_by() y summarize() entre otras, para gene
     Las tablas las puede plotear sobre la consola, pero los gráficos los debe exportar en formato .jpeg a la carpeta views. Debe generar al menos 5 gráficos y 5 tablas.")
 
 
+=======
+>>>>>>> origin/master
 
 
