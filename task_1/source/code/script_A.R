@@ -158,4 +158,17 @@ cat("Use las funciones ggplot(), group_by() y summarize() entre otras, para gene
     Tenga en cuenta algunas dimensiones como departamento, sexo y edad. 
     Las tablas las puede plotear sobre la consola, pero los gráficos los debe exportar en formato .jpeg a la carpeta views. Debe generar al menos 5 gráficos y 5 tablas.")
 
+skim(base_unica)
+getwd()
+setwd("/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/output")
+
+save(base_unica, file = "base_final.Rdata") # guardar la base de datos en output
+
+base_unica %>% summarise(total = table(p6020)) # tabla de total hombres y mujeres
+base_unica %>% group_by(p6020) %>% summarise(media = mean(p6040)) # tabla de edad promedio segun sexo
+base_unica %>% group_by(p6020) 
+
+base_male = base_unica %>% filter(p6020 == 1) # base de solo hombres
+base_female = base_unica %>% filter(p6020 == 2) # base de solo mujeres
+
 
