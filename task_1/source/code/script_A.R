@@ -163,12 +163,26 @@ getwd()
 setwd("/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/output")
 
 save(base_unica, file = "base_final.Rdata") # guardar la base de datos en output
+import(file = "base_final.Rdata")
 
+# 5 tablas minimo y 5 graficos minimo
 base_unica %>% summarise(total = table(p6020)) # tabla de total hombres y mujeres
+base_unica %>% group_by(p6020, dpto) %>% summarise(media = mean(p6040), na.rm = TRUE) # tabla de edad promedio segun sexo y dpto
+base_unica %>% group_by(p6020, dpto) %>% summarise(media = mean(esc), na.rm = TRUE) # tabla de escolaridad promedio segun sexo y dpto
+base_unica %>% group_by(p6020) %>% summarise(ingresos_promedio = mean(p6500, na.rm = TRUE)) # ingresos promedios de los hombres y mujeres
+base_unica %>% group_by(p6020, dpto) %>% summarise(total = table(ocupado), na.rm = FALSE) # tabla de ocupacion segun sexo y dpto
+base_unica %>% group_by(p6020, dpto) %>% summarise(total = table(fuerza), na.rm = FALSE) # tabla de fuerza de trabajo segun sexo y dpto
+base_unica %>% group_by(p6020) %>% summarise(total = table(inactivo), na.rm = FALSE) # tabla de inactivos segun sexo
+base_unica %>% group_by(p6020) %>% summarise(total = table(desocupado), na.rm = FALSE) # tabla de desocupados segun sexo
 base_unica %>% group_by(p6020) %>% summarise(media = mean(p6040)) # tabla de edad promedio segun sexo
-base_unica %>% group_by(p6020) 
+
 
 base_male = base_unica %>% filter(p6020 == 1) # base de solo hombres
 base_female = base_unica %>% filter(p6020 == 2) # base de solo mujeres
 
-
+graph1 = ggplot(data = base_unica) + geom_point(aes(x = esc, y = p6040)) + 
+              labs(title = "Edad y años de educacion",
+                                    x = "Escolaridad",
+                                    y = "Edad") +
+             theme_fivethirtyeight()
+graph1
