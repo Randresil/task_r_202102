@@ -208,5 +208,19 @@ graph3 = ggplot(data = base_unica) + geom_point(aes(x = p6040, y = p6500)) +
 graph3
 ggsave(plot=graph3, file = "graph3.jpeg")
 
+graph4 = ggplot(data = base_unica) + aes(x = p6020, y = p6500) + geom_bar(stat = "identity", width = 0.3) +
+  labs(title = "Sexo y salario",
+       subtitle = "1 hombre y 2 mujer",
+       x = "Sexo",
+       y = "Salario")
+graph4
+ggsave(plot=graph4, file = "graph4.jpeg")
 
+graph5 = ggplot(data = base_unica) + aes(x = p6040) +  geom_histogram( binwidth=3, fill="#69b3a2", color="#e9ecef", alpha=0.9) +
+  labs(title = "Histograma de edad",
+       x = "Edad",
+       y = "Total")
+graph5
+ggsave(plot=graph5, file = "graph5.jpeg")
 
+cat("Tuve complicaciones para poder categorizar por departamento y por eso los ultimos dos graficos.")
