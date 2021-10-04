@@ -159,34 +159,54 @@ cat("Use las funciones ggplot(), group_by() y summarize() entre otras, para gene
     Las tablas las puede plotear sobre la consola, pero los gráficos los debe exportar en formato .jpeg a la carpeta views. Debe generar al menos 5 gráficos y 5 tablas.")
 
 skim(base_unica)
-getwd()
-setwd("/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/output")
+sum(base_unica$desocupado, na.rm = TRUE) / sum(base_unica$fuerza, na.rm = TRUE) #obsevar la tasa desempleo
 
 save(base_unica, file = "base_final.Rdata") # guardar la base de datos en output
 rm(cgen, desoc, fuerza, inact, ocup)
 
-import(file = "base_final.Rdata")
-
+getwd()
+setwd("/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/output")
+base_unica = import(file = "base_final.Rdata")
+setwd("/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/views")
 
 # 5 tablas minimo y 5 graficos minimo
 base_unica %>% summarise(total = table(p6020)) # tabla de total hombres y mujeres
-base_unica %>% group_by(p6020, dpto) %>% summarise(media = mean(p6040), na.rm = TRUE) # tabla de edad promedio segun sexo y dpto
-base_unica %>% group_by(p6020, dpto) %>% summarise(media = mean(esc), na.rm = TRUE) # tabla de escolaridad promedio segun sexo y dpto
-base_unica %>% group_by(p6020) %>% summarise(ingresos_promedio = mean(p6500, na.rm = TRUE)) # ingresos promedios de los hombres y mujeres
+base_unica %>% group_by(p6020, dpto) %>% summarise(media = mean(p6040), na.rm = FALSE) # tabla de edad promedio segun sexo y dpto
 base_unica %>% group_by(p6020, dpto) %>% summarise(total = table(ocupado), na.rm = FALSE) # tabla de ocupacion segun sexo y dpto
 base_unica %>% group_by(p6020, dpto) %>% summarise(total = table(fuerza), na.rm = FALSE) # tabla de fuerza de trabajo segun sexo y dpto
 base_unica %>% group_by(p6020) %>% summarise(total = table(inactivo), na.rm = FALSE) # tabla de inactivos segun sexo
 base_unica %>% group_by(p6020) %>% summarise(total = table(desocupado), na.rm = FALSE) # tabla de desocupados segun sexo
+
+base_unica %>% group_by(p6020) %>% summarise(ingresos_promedio = mean(p6500, na.rm = TRUE)) # ingresos promedios de los hombres y mujeres
+base_unica %>% group_by(p6020, dpto) %>% summarise(media = mean(esc), na.rm = TRUE) # tabla de escolaridad promedio segun sexo y dpto
 base_unica %>% group_by(p6020) %>% summarise(media = mean(p6040)) # tabla de edad promedio segun sexo
 
 
 base_male = base_unica %>% filter(p6020 == 1) # base de solo hombres
 base_female = base_unica %>% filter(p6020 == 2) # base de solo mujeres
 
+
 graph1 = ggplot(data = base_unica) + geom_point(aes(x = esc, y = p6040)) + 
-              labs(title = "Edad y años de educacion",
-                                    x = "Escolaridad",
-                                    y = "Edad")
+  labs(title = "Edad y años de educacion",
+       x = "Escolaridad",
+       y = "Edad")
 graph1
+ggsave(plot=graph1, file = "graph1.jpeg")
+
+graph2 = ggplot(data = base_unica) + geom_point(aes(x = esc, y = p6500)) + 
+  labs(title = "Salario y años de educacion",
+       x = "Escolaridad",
+       y = "Salario")
+graph2
+ggsave(plot=graph2, file = "graph2.jpeg")
+
+
+graph3 = ggplot(data = base_unica) + geom_point(aes(x = p6040, y = p6500)) + 
+  labs(title = "Salario y edad",
+       x = "Edad",
+       y = "Salario")
+graph3
+ggsave(plot=graph3, file = "graph3.jpeg")
+
 
 
