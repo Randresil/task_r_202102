@@ -148,7 +148,7 @@ base_unica = left_join(x = base_unica, y = ocup, by = c("directorio","secuencia_
 
 colnames(base_unica)
 
-vector_var = c("directorio", "secuencia_p", "orden", "p6020", "p6040", "p6050", "inglabo", "dpto", "fex_c_2011", "esc", "mes", "desocupado", "fuerza", "inactivo", "ocupado")
+vector_var = c("directorio", "secuencia_p", "orden", "p6020", "p6040", "p6050", "p6500", "inglabo", "dpto", "fex_c_2011", "esc", "mes", "desocupado", "fuerza", "inactivo", "ocupado")
 
 base_unica = base_unica %>% select(vector_var) #quedarme con las variables de interes
 
@@ -163,7 +163,10 @@ getwd()
 setwd("/Users/ricardoandressilvatorres/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_1/data/output")
 
 save(base_unica, file = "base_final.Rdata") # guardar la base de datos en output
+rm(cgen, desoc, fuerza, inact, ocup)
+
 import(file = "base_final.Rdata")
+
 
 # 5 tablas minimo y 5 graficos minimo
 base_unica %>% summarise(total = table(p6020)) # tabla de total hombres y mujeres
@@ -183,6 +186,7 @@ base_female = base_unica %>% filter(p6020 == 2) # base de solo mujeres
 graph1 = ggplot(data = base_unica) + geom_point(aes(x = esc, y = p6040)) + 
               labs(title = "Edad y años de educacion",
                                     x = "Escolaridad",
-                                    y = "Edad") +
-             theme_fivethirtyeight()
+                                    y = "Edad")
 graph1
+
+
