@@ -71,47 +71,29 @@ View(df1)
 # Valor PAGOS(Pesos) esta en fila 7 columna 8
 # Valor de Categoria EDUCACION esta en la observacion 8 columna 2
 
+
 # Creacion de la funcion para extrae datos
 extractdata = function(i, list, criterio){
-  list_i = lista[[i]]
   
+  # Primero, crear un dataframe con funcion tibble(), hay problemas por data_frame() deprecated. 
+  # Toca tibble() o data.frame()
+  df = data.frame(Codigo = NA, Periodo = NA, Valor = NA)
+  list_i = list[[i]]
   
+  # Extraccion de Codigo DANE
+  df$Codigo =  colnames(list_i[1]) # Value
   
+  # Extraccion de Periodo 
+  df$Periodo = list_i[2,1] # Value
+  
+  # Nombres a columnas de la lista
+  colnames(list_i) = list_i[7,]
+  # Valor segun el criterio
+  df$Valor =  list_i %>% subset(NOMBRE == criterio) %>% select(`PAGOS(Pesos)`)
+  return(df)
 }
 
-f_extrac = function(n,lista,tipo_rubro){
-  lista_n = lista[[n]] 
-  colnames(lista_n) = lista_n[7,]
-  valor = lista_n %>% subset(NOMBRE==tipo_rubro) %>% select(`PAGOS(Pesos)`)
-  return(valor)  
-}
-f_extrac(n = 10 , lista = chip , tipo_rubro = "EDUCACION")
-
-
-# Completando la funcion
-f_extrac = function(n,lista,tipo_rubro){
-  
-  # crear df
-  df = data.frame(valor=NA,cod_dane=NA,periodo=NA)  
-  lista_n = lista[[n]] 
-  
-  # extraer codigo dane
-  df$cod_dane = colnames(lista_n)[1]
-  
-  # extraer periodo
-  df$periodo = lista_n[2,1]
-  
-  # extraer el valor
-  colnames(lista_n) = lista_n[7,]
-  df$valor = lista_n %>% subset(NOMBRE==tipo_rubro) %>% select(`PAGOS(Pesos)`)
-  
-  return(df)  
-}
-
-f_extrac(n = 10 , lista = chip , tipo_rubro = "EDUCACION")
-
-
-
+extractdata(i = 1, list = chip, criterio = "EDUCACIÓN")
 
 
 # Punto 3 -----------------------------------------------------------------
