@@ -60,6 +60,7 @@ for (i in 1:length(files)){
 }
 
 
+
 # Punto 2 -----------------------------------------------------------------
 print("2. Funciones")
 cat("Crear función: Cree una función que extraiga de un dataframe dentro de chip, el 
@@ -73,16 +74,15 @@ cat("Crear función: Cree una función que extraiga de un dataframe dentro de ch
 
 df1 = as.data.frame(chip[[1]])
 View(df1)
-rm(df1)
 # Podemos observar que el codigo Dane esta en nombre columna 1
 # Periodo de informacion esta en observacion 2 columna 1.
 # Valor PAGOS(Pesos) esta en fila 7 columna 8
 # Valor de Categoria EDUCACION esta en la observacion 8 columna 2
+rm(df1)
 
 
 # Creacion de la funcion para extrae datos
 extractdata = function(i, list, criterio){
-  
   # Primero, crear un dataframe con funcion tibble() o data.frame(), problemas por data_frame() deprecated. 
   df = data.frame(Codigo = NA, Periodo = NA, Valor = NA)
   list_i = list[[i]]
@@ -100,13 +100,31 @@ extractdata = function(i, list, criterio){
   return(df)
 }
 
+# Chequeo de la funcion construida
 extractdata(i = 80, list = chip, criterio = "EDUCACIÓN")
+
+
 
 # Punto 3 -----------------------------------------------------------------
 print("3. Familia Apply")
 cat("Aplique la función creada en el punto anterior a todos los elementos de la lista chip.")
 
+# Aplicacion del lapply para tener una lista, desde 1 a 80, con cambios en extract i a partir de function(x)
 lapply(1:length(chip),
                function(x) 
                  extractdata(i = x, list = chip, criterio = "EDUCACIÓN"))
 
+
+# UNOS EXTRA POR JUGAR UN POCO
+# Una lista final donde se tengan los resultados del lapply anterior a todos los objetos
+lista_educacion = lapply(1:length(chip),
+       function(x) 
+         extractdata(i = x, list = chip, criterio = "EDUCACIÓN"))
+
+lista_totalinversion = lapply(1:length(chip),
+                              function(x) 
+                                extractdata(i = x, list = chip, criterio = "TOTAL INVERSIÓN"))
+
+lista_salud = lapply(1:length(chip),
+                              function(x) 
+                                extractdata(i = x, list = chip, criterio = "SALUD"))
