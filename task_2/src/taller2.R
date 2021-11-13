@@ -1,4 +1,5 @@
 # Elaborado por: Ricardo Andres Silva Torres
+# Codigo de estudiante: 201821978
 # Colaboradores: Ninguno (solo yo jajaja)
 # Fecha de elaboracion: 07/11/2021
 # Ultima modificacion: 13/11/2021
@@ -48,7 +49,7 @@ class(files) # List, necesidad de usar funcion unlist para tener objeto tipo cha
 for (i in 1:4){
   print(files[[i]]) # Loop para observar las direcciones de todos los archivos a importar
 }
-  
+
 files = lapply(2017:2020, 
                function(x) 
                  list.files(paste0("data/imput/",x),full.names=T)) %>% unlist()
@@ -111,20 +112,20 @@ cat("Aplique la función creada en el punto anterior a todos los elementos de la
 
 # Aplicacion del lapply para tener una lista, desde 1 a 80, con cambios en extract i a partir de function(x)
 lapply(1:length(chip),
-               function(x) 
-                 extractdata(i = x, list = chip, criterio = "EDUCACIÓN"))
+       function(x) 
+         extractdata(i = x, list = chip, criterio = "EDUCACIÓN"))
 
 
 # UNOS EXTRA POR JUGAR UN POCO
 # Una lista final donde se tengan los resultados del lapply anterior a todos los objetos
 lista_educacion = lapply(1:length(chip),
-       function(x) 
-         extractdata(i = x, list = chip, criterio = "EDUCACIÓN"))
+                         function(x) 
+                           extractdata(i = x, list = chip, criterio = "EDUCACIÓN"))
 
 lista_totalinversion = lapply(1:length(chip),
                               function(x) 
                                 extractdata(i = x, list = chip, criterio = "TOTAL INVERSIÓN"))
 
 lista_salud = lapply(1:length(chip),
-                              function(x) 
-                                extractdata(i = x, list = chip, criterio = "SALUD"))
+                     function(x) 
+                       extractdata(i = x, list = chip, criterio = "SALUD"))
