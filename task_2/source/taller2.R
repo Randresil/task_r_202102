@@ -29,19 +29,30 @@ cat("1.1. Importar datos: Use un loop para importar cada archivo .xlsx de data/i
 
 # Documentacion de list.files() para determinar opciones y sacar directorios de archivos
 ?list.files
+?unlist
 list.files(".")
 list.files("data/") #Usar el TAB para observar los archivos en el directorio
 list.files("data/imput/2017", full.names = TRUE)
 
 a2017 <- list.files("data/imput/2017", full.names = TRUE) # Objeto que guarda nombres en char
-class(a2017)
-a2017
+rm(a2017)
 
-files = lapply(2017:2020, function(x) list.files(paste0("data/imput/",x),full.names=T)) # objeto lista por lapply
-files[[1]]
+files = lapply(2017:2020, 
+               function(x) 
+                 list.files(paste0("data/imput/",x),full.names=T)) # objeto lista por lapply
+class(files) # List, necesidad de usar funcion unlist para tener objeto tipo char
 
+for (i in 1:4){
+  print(files[[i]]) # Loop para observar las direcciones de todos los archivos a importar
+}
+  
 files = lapply(2017:2020, function(x) list.files(paste0("data/imput/",x),full.names=T)) %>% unlist()
+class(files) # Char
 
+# Loop de importacion en la lista chip
+for (i in 1:length(files)){
+  chip[[i]] = import(file = files[i]) 
+}
 
 
 # Punto 2 -----------------------------------------------------------------
@@ -49,7 +60,62 @@ cat("Crear función: Cree una función que extraiga de un dataframe dentro de ch
     valor PAGOS(Pesos) para la categoría EDUCACION. Asegúrese de extraer el código DANE 
     del municipio y el periodo de la información.")
 
+?as.data.frame
 ?subset
 ?select
+
+df1 = as.data.frame(chip[[1]])
+View(df1)
+# Podemos observar que el codigo Dane esta en nombre columna 1
+# Periodo de informacion esta en observacion 2 columna 1.
+# Valor PAGOS(Pesos) esta en fila 7 columna 8
+# Valor de Categoria EDUCACION esta en la observacion 8 columna 2
+
+# Creacion de la funcion para extrae datos
+extractdata = function(i, list, criterio){
+  list_i = lista[[i]]
+  
+  
+  
+}
+
+f_extrac = function(n,lista,tipo_rubro){
+  lista_n = lista[[n]] 
+  colnames(lista_n) = lista_n[7,]
+  valor = lista_n %>% subset(NOMBRE==tipo_rubro) %>% select(`PAGOS(Pesos)`)
+  return(valor)  
+}
+f_extrac(n = 10 , lista = chip , tipo_rubro = "EDUCACION")
+
+
+# Completando la funcion
+f_extrac = function(n,lista,tipo_rubro){
+  
+  # crear df
+  df = data.frame(valor=NA,cod_dane=NA,periodo=NA)  
+  lista_n = lista[[n]] 
+  
+  # extraer codigo dane
+  df$cod_dane = colnames(lista_n)[1]
+  
+  # extraer periodo
+  df$periodo = lista_n[2,1]
+  
+  # extraer el valor
+  colnames(lista_n) = lista_n[7,]
+  df$valor = lista_n %>% subset(NOMBRE==tipo_rubro) %>% select(`PAGOS(Pesos)`)
+  
+  return(df)  
+}
+
+f_extrac(n = 10 , lista = chip , tipo_rubro = "EDUCACION")
+
+
+
+
+
+# Punto 3 -----------------------------------------------------------------
+
+# final = lapply(2017:2020, extractdata() 
 
 
