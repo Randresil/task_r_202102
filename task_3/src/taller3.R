@@ -10,7 +10,7 @@
 # Configuracion inicial ---------------------------------------------------
 rm(list = ls()) # limpia el entorno de R
 if(!require(pacman)) install.packages("pacman") ; require(pacman) 
-p_load(tidyverse,viridis,sf,maps,leaflet,osmdata,ggsn,skimr,ggmap,tidycensus) 
+p_load(rio,tidyverse,viridis,sf,maps,leaflet,osmdata,ggsn,skimr,ggmap,tidycensus,utils) 
 installed.packages() # Confirmar las librerias o paquetes instalados en el momento
 Sys.setlocale("LC_CTYPE", "en_US.UTF-8") # Encoding UTF-8
 
@@ -49,8 +49,48 @@ class(puntos)
 str(puntos)
 
 # Punto 1.1.2
+# Filtrar las bases de datos
 puntos$CSIMBOL
 c_medico <- filter(puntos, CSIMBOL == "021001" | CSIMBOL == "021002" | CSIMBOL == "021003")
 c_medico
+
+# Punto 1.1.3
+# Importar y filtrar las bases de datos .rds
+list.files("task_3/data/input/")
+c_poblado <- import("task_3/data/input/c poblado (2017).rds")
+depto <- import("task_3/data/input/dp deptos (2017).rds")
+mapmuse <- import("task_3/data/input/victimas_map-muse.rds")
+
+head(c_poblado)
+c_poblado <- filter(c_poblado, cod_dane >= 54001 & cod_dane < 55000)
+depto$name_dpto
+depto <- filter(depto, name_dpto == "NORTE DE SANTANDER")
+depto
+
+
+# Punto 1.2
+print("1.2. Atributos de los objetos")
+cat("Aplique la función skim de la librería skimr para explorar todos los objetos 
+    cargados en el punto anterior. Si considera necesario, selecciones algunas 
+    variables y pinte sobre la consola la tabla de frecuencia estas.")
+
+# Por busqueda encontre una pagina para hacer tablas de frecuencias y un paquete de R
+browseURL("https://www.programmingr.com/statistics/frequency-table/")
+install.packages('epiDisplay')
+library(epiDisplay)
+?tab1
+
+ls() # List objects in the global environment
+skim(ls())
+skim(c_medico) # Funciona
+    tab1(c_medico$DPTO_CCDGO, cum.percent = TRUE)
+    tab1(c_medico$MPIO_CCDGO, cum.percent = TRUE)
+skim(c_poblado) # Funciona
+    tab1(c_poblado$cod_dane, cum.percent = TRUE)
+skim(depto) # Funciona
+
+skim(mapmuse) # R se demora
+skim(puntos) # R se demora
+skim(via) # R hace KABOOM
 
 
