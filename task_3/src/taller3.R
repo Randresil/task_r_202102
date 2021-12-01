@@ -89,8 +89,17 @@ skim(c_poblado) # Funciona
     tab1(c_poblado$cod_dane, cum.percent = TRUE)
 skim(depto) # Funciona
 
-skim(mapmuse) # R se demora
-skim(puntos) # R se demora
+skim(mapmuse) # R se demora un poquito
+    tab1(mapmuse$tipo_accidente, cum.percent = TRUE)
+    tab1(mapmuse$year, cum.percent = TRUE)
+    tab1(mapmuse$month, cum.percent = TRUE)
+    tab1(mapmuse$condicion, cum.percent = TRUE)
+    tab1(mapmuse$genero, cum.percent = TRUE)
+    tab1(mapmuse$estado, cum.percent = TRUE)
+    tab1(mapmuse$actividad, cum.percent = TRUE)
+    tab1(mapmuse$cod_mpio, cum.percent = TRUE)
+skim(puntos) # R se demora tambien
+    tab1(puntos$MPIO_CCDGO, cum.percent = TRUE)
 skim(via) # R hace KABOOM
 
 
