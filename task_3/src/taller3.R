@@ -102,4 +102,35 @@ skim(puntos) # R se demora tambien
     tab1(puntos$MPIO_CCDGO, cum.percent = TRUE)
 skim(via) # R hace KABOOM
 
+dev.off()
+
+# Punto 1.3
+print("1.3. Geometrías del objeto")
+
+cat("1.3.1 Para todos los objetos del punto 1.1., pinte sobre la consola 
+la caja de coordenadas (st_bbox) y el CRS de cada objeto.")
+
+cat("1.3.2 Ahora va a re proyectar el CRS de todos los objetos. Asigne la 
+siguiente CRS +proj=utm +zone=19+datum=WGS84 +units=m +no_defs a todos 
+los objetos del punto 1.1..")
+
+
+# Punto 1.3.1
+c_medico %>% st_crs() # get CRS
+c_medico %>% st_bbox() # get bbox
+
+c_poblado %>% st_crs()
+c_poblado %>% st_bbox() 
+
+depto %>% st_crs() 
+depto %>% st_bbox() 
+
+mapmuse %>% st_crs() 
+mapmuse %>% st_bbox() 
+
+puntos %>% st_crs() 
+puntos %>% st_bbox() 
+
+via %>% st_crs() 
+via %>% st_bbox() 
 
