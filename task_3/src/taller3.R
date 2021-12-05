@@ -17,10 +17,10 @@ Sys.setlocale("LC_CTYPE", "en_US.UTF-8") # Encoding UTF-8
 
 # Punto 1 - Datos Espaciales (50%) -------------------------------------------------
 print("1.1. Importar datos espaciales")
-cat("1.1.1 De la carpeta data/outpu importe los shapefiles de VIAS (llame al objeto via) 
-    y MGN_URB_TOPONIMIA (llame al objeto puntos). El primero contiene las vías 
-    del departamento de Norte de Santander y el segundo la ubicación de algunos 
-    servicios públicos (hospitales, policía,. . . ) y 
+cat("1.1.1 De la carpeta data/outpu importe los shapefiles de VIAS (llame al 
+    objeto via) y MGN_URB_TOPONIMIA (llame al objeto puntos). El primero
+    contiene las vías del departamento de Norte de Santander y el segundo 
+    la ubicación de algunos servicios públicos (hospitales, policía,. . . ) y 
     comerciales (restaurantes, tiendas,. . . ).)")
 
 cat("1.1.2 Cree un nuevo objeto llamado c_medico, que contenga las observaciones del 
@@ -51,7 +51,8 @@ str(puntos)
 # Punto 1.1.2
 # Filtrar las bases de datos
 puntos$CSIMBOL
-c_medico <- filter(puntos, CSIMBOL == "021001" | CSIMBOL == "021002" | CSIMBOL == "021003")
+c_medico <- filter(puntos, CSIMBOL == "021001" | CSIMBOL == "021002" | 
+                       CSIMBOL == "021003")
 c_medico
 
 # Punto 1.1.3
@@ -114,8 +115,9 @@ cat("1.3.2 Ahora va a re proyectar el CRS de todos los objetos. Asigne la
 siguiente CRS +proj=utm +zone=19+datum=WGS84 +units=m +no_defs a todos 
 los objetos del punto 1.1..")
 
-
 # Punto 1.3.1
+?st_crs
+?st_bbox
 c_medico %>% st_crs() # get CRS
 c_medico %>% st_bbox() # get bbox
 
@@ -134,3 +136,65 @@ puntos %>% st_bbox()
 via %>% st_crs() 
 via %>% st_bbox() 
 
+
+
+# Punto 1.4
+print("1.4. Operaciones Geometricas")
+
+
+# Punto 1.5
+print("1.5. Pintar mapas ")
+
+
+
+# Punto 2 - Regresiones (30%) ----------------------------------------------
+
+print("La Oficina del Alto Comisionado para la Paz (OACP) tiene el registro 
+oficial de víctimas por minas antipersona (MAP) y municiones sin 
+explosionar (MUSE). Estos registros pueden obtenerse en la página 
+oficial de la OACP. Para este ejercicio usted cuenta con una base 
+de datos que contiene los registros de las victimas de MAP-MUSE en 
+el departamento de Norte de Santander. La variable fallecido toma el 
+valor de 1 si la persona fallece en el accidente y 0 si resulta herida.")
+
+# Punto 2.1
+cat("Importe el archivo data/outpu/df_mapmuse.rds y estime un modelo de probabilidad 
+    lineal en el que fallecido es la variable dependiente. Y use las demás variables 
+    como variables explicativas. Almacene los resultados de la estimación en un 
+    objeto llamado ols.")
+
+# Punto 2.2
+cat("Exporte a la carpeta views los gráficos con los coeficientes 
+    (coef-plot) de las estimaciones.")
+
+# Punto 2.3
+cat("Ahora estime la ecuación del punto 2.1. usando un modelo logit 
+    y un modelo probit, almacene los resultados de las estimaciones 
+    en dos objetos llamados logit y probit respectivamente.")
+
+# Punto 2.4
+cat("Exporte los resultados de los tres modelos en una misma tabla 
+    usando la función outreg.")
+
+# Punto 2.5
+cat("De los objetos logit y probit exporte a la carpeta views dos gráficos con 
+    el efecto marginal de la distancia a un centro medico sobre la probabilidad 
+    de fallecer.")
+
+
+
+
+# Punto 3 - Web Scraping (10%) --------------------------------------------
+
+# Punto 3.1
+cat("Desde la consola de Rstudio lea la siguiente url 
+    https://es.wikipedia.org/wiki/Departamentos_de_Colombia y cree un objeto 
+    que contenga el HTML de la página como un objeto xml_document.")
+
+# Punto 3.2
+cat("Use el xpath para extraer el título de la página (Departamentos 
+    de Colombia).")
+
+
+# Punto 3.3
+cat("Extraiga la tabla que contiene los departamentos de Colombia.")
