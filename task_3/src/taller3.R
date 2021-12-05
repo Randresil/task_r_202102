@@ -10,7 +10,8 @@
 # Configuracion inicial ---------------------------------------------------
 rm(list = ls()) # limpia el entorno de R
 if(!require(pacman)) install.packages("pacman") ; require(pacman) 
-p_load(rio,tidyverse,viridis,sf,maps,leaflet,osmdata,ggsn,skimr,ggmap,tidycensus,utils) 
+p_load(rio,tidyverse,viridis,sf,maps,leaflet,osmdata,ggsn,
+       skimr,ggmap,tidycensus,utils,ggplot2,broom,modelsummary,GGally, outreg) 
 installed.packages() # Confirmar las librerias o paquetes instalados en el momento
 Sys.setlocale("LC_CTYPE", "en_US.UTF-8") # Encoding UTF-8
 
@@ -84,24 +85,30 @@ library(epiDisplay)
 ls() # List objects in the global environment
 skim(ls())
 skim(c_medico) # Funciona
-    tab1(c_medico$DPTO_CCDGO, cum.percent = TRUE)
-    tab1(c_medico$MPIO_CCDGO, cum.percent = TRUE)
+tab1(c_medico$DPTO_CCDGO, cum.percent = TRUE)
+tab1(c_medico$MPIO_CCDGO, cum.percent = TRUE)
 skim(c_poblado) # Funciona
-    tab1(c_poblado$cod_dane, cum.percent = TRUE)
+tab1(c_poblado$cod_dane, cum.percent = TRUE)
 skim(depto) # Funciona
 
 skim(mapmuse) # R se demora un poquito
-    tab1(mapmuse$tipo_accidente, cum.percent = TRUE)
-    tab1(mapmuse$year, cum.percent = TRUE)
-    tab1(mapmuse$month, cum.percent = TRUE)
-    tab1(mapmuse$condicion, cum.percent = TRUE)
-    tab1(mapmuse$genero, cum.percent = TRUE)
-    tab1(mapmuse$estado, cum.percent = TRUE)
-    tab1(mapmuse$actividad, cum.percent = TRUE)
-    tab1(mapmuse$cod_mpio, cum.percent = TRUE)
-skim(puntos) # R se demora tambien
-    tab1(puntos$MPIO_CCDGO, cum.percent = TRUE)
-skim(via) # R hace KABOOM
+tab1(mapmuse$tipo_accidente, cum.percent = TRUE)
+tab1(mapmuse$year, cum.percent = TRUE)
+tab1(mapmuse$month, cum.percent = TRUE)
+tab1(mapmuse$condicion, cum.percent = TRUE)
+tab1(mapmuse$genero, cum.percent = TRUE)
+tab1(mapmuse$estado, cum.percent = TRUE)
+tab1(mapmuse$actividad, cum.percent = TRUE)
+tab1(mapmuse$cod_mpio, cum.percent = TRUE)
+
+# skim(puntos) # R se demora
+head(puntos)
+str(puntos)
+tab1(puntos$MPIO_CCDGO, cum.percent = TRUE)
+
+# skim(via) # R hace KABOOM
+head(via)
+str(via)
 
 dev.off()
 
@@ -137,7 +144,6 @@ via %>% st_crs()
 via %>% st_bbox() 
 
 
-
 # Punto 1.4
 print("1.4. Operaciones Geometricas")
 
@@ -163,18 +169,65 @@ cat("Importe el archivo data/outpu/df_mapmuse.rds y estime un modelo de probabil
     como variables explicativas. Almacene los resultados de la estimación en un 
     objeto llamado ols.")
 
+getwd()
+list.files("task_3/data/output/")
+df_mapmuse <- import("task_3/data/output/f_mapmuse.rds")
+summary(df_mapmuse)
+
+# Modelo de probabilidad lineal (tomando TODAS las variables)
+?lm
+ols <- lm(formula = fallecido ~ dist_hospi + dist_cpoblado + 
+              dist_vias + as.factor(genero) + year + month + as.factor(actividad) + 
+              condicion + tipo_accidente + as.factor(cod_mpio)
+          , data = df_mapmuse)
+
+# Otro OLS prob pero sin muchas variables
+ols2 <- lm(formula = fallecido ~ dist_hospi + dist_cpoblado + 
+              dist_vias + as.factor(genero) + as.factor(actividad) + 
+              condicion, data = df_mapmuse) 
+
+ols %>% summary() 
+ols2 %>% summary() 
+ols$coefficients # Obtener los coefficients
+
 # Punto 2.2
 cat("Exporte a la carpeta views los gráficos con los coeficientes 
     (coef-plot) de las estimaciones.")
+
+coef1 <- tidy(ols, conf.int = TRUE)
+coef1
+
+# Para poder exportar en codigo un archivo
+browseURL(url = "https://r-coder.com/save-plot-r/#Export_plot_with_the_menu_in_RStudio_and_R_GUI")
+
+?png
+setwd("~/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_3/Views")
+png(filename = "coefplot1.png", width = 560, height = 480)
+    modelplot(ols)
+# ggcoef(ols) # Otra forma (funcion) para sacar grafico. Paquete GGally.
+dev.off()
+setwd("~/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_3")
 
 # Punto 2.3
 cat("Ahora estime la ecuación del punto 2.1. usando un modelo logit 
     y un modelo probit, almacene los resultados de las estimaciones 
     en dos objetos llamados logit y probit respectivamente.")
 
+logit <- glm(formula = fallecido ~ dist_hospi + dist_cpoblado + 
+                 dist_vias + as.factor(genero) + year + month + as.factor(actividad) + 
+                 condicion + tipo_accidente + as.factor(cod_mpio), 
+             data = df_mapmuse, family = binomial(link = "logit")) 
+    
+probit <- glm(formula = fallecido ~ dist_hospi + dist_cpoblado + 
+                  dist_vias + as.factor(genero) + year + month + as.factor(actividad) + 
+                  condicion + tipo_accidente + as.factor(cod_mpio), 
+              data = df_mapmuse, family = binomial(link = "probit")) 
+
 # Punto 2.4
 cat("Exporte los resultados de los tres modelos en una misma tabla 
     usando la función outreg.")
+
+?outreg
 
 # Punto 2.5
 cat("De los objetos logit y probit exporte a la carpeta views dos gráficos con 
@@ -198,3 +251,4 @@ cat("Use el xpath para extraer el título de la página (Departamentos
 
 # Punto 3.3
 cat("Extraiga la tabla que contiene los departamentos de Colombia.")
+
