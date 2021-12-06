@@ -205,7 +205,7 @@ cat("1.5.1 Use la función leaflet para visualizar en un mismo mapa: los
 ?addCircleMarkers
 
 # Primero se tiene que utilizar el depto, luego colocar poligonos de c_medicos y c_pob.
-mapa_medico = leaflet(depto) %>% addTiles() %>% addPolygons(fillColor="grey",weight=1) %>% 
+mapa_medico = leaflet(depto) %>% addTiles() %>% addPolygons(fillColor="gray",weight=1) %>% 
     addCircleMarkers(data=c_medico, radius = 1, color = "blue")
 mapa_medico
 
@@ -310,14 +310,27 @@ colnames(model_table) <- c("Variable", "Stat", "OLS", "Logit", "Probit")
 # Exportado a la carpeta de output por si algo en modo texto
 write.table(x = model_table, file = "tabla_modelos.txt", sep = ",")
 
-
 # Punto 2.5
 cat("De los objetos logit y probit exporte a la carpeta views dos gráficos con 
     el efecto marginal de la distancia a un centro medico sobre la probabilidad 
     de fallecer.")
 
+?modelplot
+
 setwd("~/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_3/Views")
 
+logit_margins = margins(logit)
+logit_margins
+probit_margins = margins(probit)
+probit_margins
+
+graph_logit = modelplot(logit_margins, coef_map = "dist_hospi") + labs(title = "Efecto marginal logit en probabilidad")
+graph_logit
+ggsave("graph_coeflogit.jpeg", graph_logit)
+
+graph_probit = modelplot(probit_margins, coef_map = "dist_hospi") + labs(title = "Efecto marginal probit en probabilidad")
+graph_probit
+ggsave("graph_coefprobit.jpeg", graph_probit)
 
 
 # Punto 3 - Web Scraping (10%) --------------------------------------------
@@ -356,8 +369,6 @@ cat("Extraiga la tabla que contiene los departamentos de Colombia.")
 # //*[@id="mw-content-text"]/div[1]/table[3]
 ?html_table
 
-# Extraccion de la tabla
-tabla_depa <- html_nodes(pag_html, xpath = '//*[@id="mw-content-text"]/div[1]/table[3]') 
-    %>% html_table()
-tabla_depa
-
+# Extraccion de la tabla en objeto de tipo lista
+tabla_depa <- html_nodes(pag_html, xpath = '//*[@id="mw-content-text"]/div[1]/table[3]') %>% html_table()
+tabla_depa 
