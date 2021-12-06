@@ -128,10 +128,11 @@ los objetos del punto 1.1..")
 ?st_crs
 ?st_bbox
 ?st_as_sf
+?st_transform
 
 class(c_medico)
-c_medico %>% st_crs() # get CRS
-c_medico %>% st_bbox() # get bbox
+c_medico %>% st_crs() # Obtener el CRS
+c_medico %>% st_bbox() # Obtener el bbox
 
 c_poblado %>% st_crs()
 c_poblado %>% st_bbox() 
@@ -148,11 +149,16 @@ puntos %>% st_bbox()
 via %>% st_crs() 
 via %>% st_bbox() 
 
+# Tambien se habria podido hacer con una funcion de lapply.
+# Muy a lo tipo de hacer un objeto con todos los del task y aplicarles funcion
+
 c_medico <- st_as_sf(x = c_medico, crs = "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
 depto <- st_as_sf(x = depto, crs = "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
 mapmuse <- st_as_sf(x = mapmuse, crs = "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
 puntos <- st_as_sf(x = puntos, crs = "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
 via <- st_as_sf(x = via, crs = "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
+
+leaflet() %>% addTiles() %>% addCircleMarkers(data = puntos)
 
 # Punto 1.4
 print("1.4. Operaciones Geometricas")
@@ -160,14 +166,29 @@ print("1.4. Operaciones Geometricas")
 cat("1.4.1 Use el objeto depto para hacer cliping y dejar los puntos de 
     mapmuse que están debajo del polígono de Norte de Santander.")
 
+?st_intersection
+
 class(depto)
 depto
-plot(depto$geometry) 
-points(mapmuse)
+
+# La funcion de intersection permite juntar los objetos espaciales por lo que entiendo
+mapmuse_depto_int=st_intersection(mapmuse, depto)
 
 cat("1.4.2 Del objeto c_poblado, seleccione cualquier municipio, use 
     este polígono y el objeto via, para calcular el largo de las vías 
     en el centro poblado que seleccionó.")
+
+?geom_sf
+
+# Seleccion cod_mpio = 54001
+cpob =c_poblado%>%subset(codmpio==54001) # Subset, toma observaciones con cod seleccionado
+ggplot() + 
+    geom_sf(data = cpob , col = "blue") + 
+    geom_sf(data = via, col = "red")
+
+# Toma la interseccion entre objetos y saca distancia o largo de vias al centro poblado
+st_length(st_intersection(via, cpob)) %>% sum 
+# 1172272 [m]
 
 
 # Punto 1.5
@@ -178,6 +199,21 @@ cat("1.5.1 Use la función leaflet para visualizar en un mismo mapa: los
     Norte de Santander y los hospitales y puestos de salud del 
     objeto c_medicos.")
 
+?leaflet # The function creates a map widget.
+?addTiles # Add graphics elements and layers to the map widget
+?addPolygons # Add graphics elements and layers to the map widget.
+?addCircleMarkers
+
+# Primero se tiene que utilizar el depto, luego colocar poligonos de c_medicos y c_pob.
+mapa_medico = leaflet(depto) %>% addTiles() %>% addPolygons(fillColor="grey",weight=1) %>% 
+    addCircleMarkers(data=c_medico, radius = 1, color = "blue")
+mapa_medico
+
+# Segundo mapa con el poligono de los centros poblados
+mapa_pob = mapa_medico %>% addPolygons(data=c_poblado, color="red")
+mapa_pob
+
+
 cat("1.5.2 Use las librerías ggplot, ggsn y las demás que considere 
     necesarias para visualizar en un mismo mapa: los polígonos de 
     los centros poblados, el polígono del departamento de Norte de 
@@ -185,6 +221,7 @@ cat("1.5.2 Use las librerías ggplot, ggsn y las demás que considere
     Asegúrese de poner la barra de escalas, la estrella del norte y las
     etiquetas que permitan diferencias cada uno de los objetos. 
     Exporte el mapa en formato .pdf a la carpeta views.")
+
 
 
 # Punto 2 - Regresiones (30%) ----------------------------------------------
@@ -320,6 +357,7 @@ cat("Extraiga la tabla que contiene los departamentos de Colombia.")
 ?html_table
 
 # Extraccion de la tabla
-tabla_depa <- html_nodes(pag_html, xpath = '//*[@id="mw-content-text"]/div[1]/table[3]') %>% html_table()
+tabla_depa <- html_nodes(pag_html, xpath = '//*[@id="mw-content-text"]/div[1]/table[3]') 
+    %>% html_table()
 tabla_depa
 
