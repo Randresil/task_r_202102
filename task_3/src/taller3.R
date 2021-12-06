@@ -10,8 +10,10 @@
 # Configuracion inicial ---------------------------------------------------
 rm(list = ls()) # limpia el entorno de R
 if(!require(pacman)) install.packages("pacman") ; require(pacman) 
-p_load(rio,tidyverse,viridis,sf,maps,leaflet,osmdata,ggsn,
-       skimr,ggmap,tidycensus,utils,ggplot2,broom,modelsummary,GGally, outreg) 
+p_load(rio,tidyverse,viridis,sf,maps,leaflet,osmdata,ggsn, margins,
+       skimr,ggmap,tidycensus,utils,ggplot2,broom,modelsummary,GGally, outreg,
+       htmltools, stargazer, rvest) 
+
 installed.packages() # Confirmar las librerias o paquetes instalados en el momento
 Sys.setlocale("LC_CTYPE", "en_US.UTF-8") # Encoding UTF-8
 
@@ -125,6 +127,9 @@ los objetos del punto 1.1..")
 # Punto 1.3.1
 ?st_crs
 ?st_bbox
+?st_as_sf
+
+class(c_medico)
 c_medico %>% st_crs() # get CRS
 c_medico %>% st_bbox() # get bbox
 
@@ -143,14 +148,43 @@ puntos %>% st_bbox()
 via %>% st_crs() 
 via %>% st_bbox() 
 
+c_medico <- st_as_sf(x = c_medico, crs = "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
+depto <- st_as_sf(x = depto, crs = "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
+mapmuse <- st_as_sf(x = mapmuse, crs = "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
+puntos <- st_as_sf(x = puntos, crs = "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
+via <- st_as_sf(x = via, crs = "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
 
 # Punto 1.4
 print("1.4. Operaciones Geometricas")
+
+cat("1.4.1 Use el objeto depto para hacer cliping y dejar los puntos de 
+    mapmuse que están debajo del polígono de Norte de Santander.")
+
+class(depto)
+depto
+plot(depto$geometry) 
+points(mapmuse)
+
+cat("1.4.2 Del objeto c_poblado, seleccione cualquier municipio, use 
+    este polígono y el objeto via, para calcular el largo de las vías 
+    en el centro poblado que seleccionó.")
 
 
 # Punto 1.5
 print("1.5. Pintar mapas ")
 
+cat("1.5.1 Use la función leaflet para visualizar en un mismo mapa: los 
+    polígonos de los centros poblados, el polígono del departamento de 
+    Norte de Santander y los hospitales y puestos de salud del 
+    objeto c_medicos.")
+
+cat("1.5.2 Use las librerías ggplot, ggsn y las demás que considere 
+    necesarias para visualizar en un mismo mapa: los polígonos de 
+    los centros poblados, el polígono del departamento de Norte de 
+    Santander y los hospitales y puestos de salud del objeto c_medicos. 
+    Asegúrese de poner la barra de escalas, la estrella del norte y las
+    etiquetas que permitan diferencias cada uno de los objetos. 
+    Exporte el mapa en formato .pdf a la carpeta views.")
 
 
 # Punto 2 - Regresiones (30%) ----------------------------------------------
@@ -183,8 +217,8 @@ ols <- lm(formula = fallecido ~ dist_hospi + dist_cpoblado +
 
 # Otro OLS prob pero sin muchas variables
 ols2 <- lm(formula = fallecido ~ dist_hospi + dist_cpoblado + 
-              dist_vias + as.factor(genero) + as.factor(actividad) + 
-              condicion, data = df_mapmuse) 
+               dist_vias + as.factor(genero) + as.factor(actividad) + 
+               condicion, data = df_mapmuse) 
 
 ols %>% summary() 
 ols2 %>% summary() 
@@ -203,7 +237,7 @@ browseURL(url = "https://r-coder.com/save-plot-r/#Export_plot_with_the_menu_in_R
 ?png
 setwd("~/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_3/Views")
 png(filename = "coefplot1.png", width = 560, height = 480)
-    modelplot(ols)
+modelplot(ols)
 # ggcoef(ols) # Otra forma (funcion) para sacar grafico. Paquete GGally.
 dev.off()
 setwd("~/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_3")
@@ -217,7 +251,7 @@ logit <- glm(formula = fallecido ~ dist_hospi + dist_cpoblado +
                  dist_vias + as.factor(genero) + year + month + as.factor(actividad) + 
                  condicion + tipo_accidente + as.factor(cod_mpio), 
              data = df_mapmuse, family = binomial(link = "logit")) 
-    
+
 probit <- glm(formula = fallecido ~ dist_hospi + dist_cpoblado + 
                   dist_vias + as.factor(genero) + year + month + as.factor(actividad) + 
                   condicion + tipo_accidente + as.factor(cod_mpio), 
@@ -228,12 +262,24 @@ cat("Exporte los resultados de los tres modelos en una misma tabla
     usando la función outreg.")
 
 ?outreg
+?colnames
+getwd()
+setwd("~/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_3/data/output")
+
+model_table <- outreg(list(ols, logit, probit))
+model_table
+colnames(model_table) <- c("Variable", "Stat", "OLS", "Logit", "Probit")
+
+# Exportado a la carpeta de output por si algo en modo texto
+write.table(x = model_table, file = "tabla_modelos.txt", sep = ",")
+
 
 # Punto 2.5
 cat("De los objetos logit y probit exporte a la carpeta views dos gráficos con 
     el efecto marginal de la distancia a un centro medico sobre la probabilidad 
     de fallecer.")
 
+setwd("~/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_3/Views")
 
 
 
@@ -244,11 +290,36 @@ cat("Desde la consola de Rstudio lea la siguiente url
     https://es.wikipedia.org/wiki/Departamentos_de_Colombia y cree un objeto 
     que contenga el HTML de la página como un objeto xml_document.")
 
+# Abrir en la web la pagina de los departamentos de Colombia
+browseURL(url = "https://es.wikipedia.org/wiki/Departamentos_de_Colombia")
+
+pag_html <- "https://es.wikipedia.org/wiki/Departamentos_de_Colombia"
+pag_html <- read_html(pag_html)
+
+# Verificar el tipo de clase que es el objeto creado
+class(pag_html) # xml_document
+
 # Punto 3.2
 cat("Use el xpath para extraer el título de la página (Departamentos 
     de Colombia).")
 
+# Para obtener el xpath de la pagina, inspeccionar elemento y copiar
+# //*[@id="firstHeading"]
+
+?html_nodes
+?html_text # Funcion que ayuda a obtener el texto de un elemento
+
+titulo_pag <- html_nodes(pag_html, xpath = '//*[@id="firstHeading"]') %>% html_text() 
+titulo_pag
 
 # Punto 3.3
 cat("Extraiga la tabla que contiene los departamentos de Colombia.")
+
+# Xpath de la tabla de los departamentos
+# //*[@id="mw-content-text"]/div[1]/table[3]
+?html_table
+
+# Extraccion de la tabla
+tabla_depa <- html_nodes(pag_html, xpath = '//*[@id="mw-content-text"]/div[1]/table[3]') %>% html_table()
+tabla_depa
 
