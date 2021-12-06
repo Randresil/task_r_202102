@@ -12,7 +12,7 @@ rm(list = ls()) # limpia el entorno de R
 if(!require(pacman)) install.packages("pacman") ; require(pacman) 
 p_load(rio,tidyverse,viridis,sf,maps,leaflet,osmdata,ggsn, margins,
        skimr,ggmap,tidycensus,utils,ggplot2,broom,modelsummary,GGally, outreg,
-       htmltools, stargazer, rvest) 
+       htmltools, stargazer, rvest, ggsn) 
 
 installed.packages() # Confirmar las librerias o paquetes instalados en el momento
 Sys.setlocale("LC_CTYPE", "en_US.UTF-8") # Encoding UTF-8
@@ -205,7 +205,7 @@ cat("1.5.1 Use la función leaflet para visualizar en un mismo mapa: los
 ?addCircleMarkers
 
 # Primero se tiene que utilizar el depto, luego colocar poligonos de c_medicos y c_pob.
-mapa_medico = leaflet(depto) %>% addTiles() %>% addPolygons(fillColor="gray",weight=1) %>% 
+mapa_medico = leaflet(depto) %>% addTiles() %>% addPolygons(fillColor="green",weight=1) %>% 
     addCircleMarkers(data=c_medico, radius = 1, color = "blue")
 mapa_medico
 
@@ -222,6 +222,31 @@ cat("1.5.2 Use las librerías ggplot, ggsn y las demás que considere
     etiquetas que permitan diferencias cada uno de los objetos. 
     Exporte el mapa en formato .pdf a la carpeta views.")
 
+setwd("~/OneDrive - Universidad de los Andes/TallerR - 2021-2/task_r_202102/task_3/Views")
+
+# Mapa basico con los 3 objetos
+mapa_basico = ggplot() + 
+    geom_sf(data = depto , col = "black", fill = "gray" ) +
+    geom_sf(data = c_medico , col = "blue" , size = 1.5) +
+    geom_sf(data = c_poblado , col = "green") + theme_classic()
+mapa_basico
+
+dev.off()
+
+# Paquete que coloca los simbolos del norte y los scale bars
+?`ggsn-package`
+?north
+?scalebar
+
+# Mapa con detalles
+mapa_final = mapa_basico + 
+    north(depto, location = "topright") +
+    labs(title = "Un mapa en R del Norte de Santander", subtitle = "Centros poblados en verde y centros médicos en azul") + 
+    xlab("Longitud") + ylab("Latitud") +
+    scalebar(data = depto , dist = 50 , dist_unit = "km" , transform = TRUE , model = "WGS84", height = 0.01, st.size = 2)
+mapa_final
+
+ggsave("Mapa_norte_santander.pdf")
 
 
 # Punto 2 - Regresiones (30%) ----------------------------------------------
@@ -324,6 +349,8 @@ logit_margins
 probit_margins = margins(probit)
 probit_margins
 
+
+# La opcion del coefmap es la que permite seleccionar uno de los betas/resultados
 graph_logit = modelplot(logit_margins, coef_map = "dist_hospi") + labs(title = "Efecto marginal logit en probabilidad")
 graph_logit
 ggsave("graph_coeflogit.jpeg", graph_logit)
